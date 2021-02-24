@@ -1,0 +1,55 @@
+{% extends 'base.html' %}
+{% load humanize %}
+
+{% block content %}
+
+<div class="col-sm-8 col-sm-offset-2"></div>
+{% if empty %} 
+    <h1 style="text-align: center;">{{ empty_message}}</h1>
+
+{% else %}    
+    <table class="table">
+        <thead>
+            <th>Tanaman</th>
+            <th>Harga</th>
+            <th>Jumlah</th>
+            <th></th>
+            <th></th>
+        </thead>
+        <tfoot>
+            <tr>
+                <td></td>
+                <td>Total: Rp {{ cart.total|intcomma }}</td>
+                <td></td>
+                <td></td>
+                <td></td>
+                
+            </tr>
+        </tfoot>
+        {% for item in cart.cartitem_set.all %}
+
+            <tr>
+                <td>{{ item.product }} 
+                    {% if item.variations.all %}
+                    <ul>
+                        {% for subitem in item.variations.all %}
+                            <li>{{ subitem.category|capfirst }} : {{ subitem.title|capfirst }}</li>
+                        {% endfor %}
+                    </ul>
+                    {% endif %}
+                </td>
+                <td>Rp {{ item.product.price|intcomma }}</td>
+                <td>{{ item.quantity }}</td>
+                <td><a href="{% url 'remove_from_cart' item.id %}">Remove</a></td>
+            </tr>
+                
+            
+        {% endfor %}
+    </table>
+    <br>
+    <a href="{% url 'checkout' %}">Checkout</a>
+</div>
+
+{% endif %}
+{% endblock content %}
+    

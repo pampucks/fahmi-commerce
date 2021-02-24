@@ -1,0 +1,154 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load humanize %}
+
+{% block head_title %}
+Welcome to
+{% endblock head_title %}
+
+
+{% block styles %}
+<style>
+    /* .container{
+        color:red;
+    } */
+    .bd-placeholder-img {
+        font-size: 1.125rem;
+        text-anchor: middle;
+        -webkit-user-select: none;
+        -moz-user-select: none;
+        user-select: none;
+    }
+    @media (min-width: 768px) {
+    .bd-placeholder-img-lg {
+        font-size: 3.5rem;
+    }}
+    .alert-top-message {
+        margin-bottom: 0px;
+        border-radius: 0px;
+        padding-left: 0px;
+        text-align: center;
+        background-color: lightcyan;
+    }
+    .alert-top-message h3 {
+        margin: auto;
+    }
+    .alert-second {
+        background-color: lightcyan;
+    }
+    .modal-dialog {
+        margin-top: 15%;
+    }
+    .carousel-fit {
+        margin-top: -24px; 
+        margin-bottom: 64px;
+        padding-right: 0px;
+        padding-left: 0px;
+    }
+</style>
+{% endblock styles %}
+    
+
+{% block jumbotron %}
+
+{% if sliders %}
+    
+<div class="container-fluid carousel-fit">
+    <div id="carouselExampleIndicators" class="carousel slide" data-bs-ride="carousel">
+        <ol class="carousel-indicators">
+            {% for slider in sliders %}
+            <li data-bs-target="#carouselExampleIndicators" data-bs-slide-to="{{ forloop.counter }}"{% if forloop.first %}class="active"{% endif %}>
+            </li>
+            {% endfor %}
+        </ol>
+        <div class="carousel-inner">
+            
+            {% for slider in sliders %}
+            <div class="carousel-item {% if forloop.first %}active{% endif %}">
+                {% if slider.url_link %}<a href="{{ slider.url_link }}">{% endif %}
+                <img src="{{ slider.get_image_url }}" class="d-block w-100" alt="...">
+                {% if slider.url_link %}</a>{% endif %}
+                <div class="carousel-caption d-none d-md-block">
+                    {% if slider.header_text %}
+                        <h1>{{ slider.header_text|safe }}</h1>
+                    {% endif %}
+                    {% if slider.text %}
+                        <p>{{ slider.text|safe }}</p>
+                    {% endif %}
+                </div>
+            </div>
+            {% endfor %}
+                
+        </div>
+        <a class="carousel-control-prev" href="#carouselExampleIndicators" role="button" data-bs-slide="prev">
+            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+            <span class="visually-hidden">Previous</span>
+        </a>
+        <a class="carousel-control-next" href="#carouselExampleIndicators" role="button" data-bs-slide="next">
+            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+            <span class="visually-hidden">Next</span>
+        </a>
+    </div>
+</div>
+
+{% endif %}
+
+{% endblock jumbotron %}
+
+{% block content %}
+    <div class="row">
+        
+        {% for product in products %}
+        <div class="col-sm-3">
+            
+            
+            {% if product.productimage_set.all %}
+                {% for item in product.productimage_set.all %}
+                    {% if item.featured %}
+                    <a href="{{ product.get_absolute_url }}">
+                    <div class="img-thumbnail" style="
+                    width: 260px; 
+                    height: 260px; 
+                    background-image: url('{{ MEDIA_URL }}{{ item.image }}');
+                    background-size: cover;
+                    background-position: center;
+                    margin: 0 auto;
+                    "></div>
+                    </a>
+                    <br>
+                    {% endif %}
+                {% endfor %}
+            
+            {% else %}
+                <a href="{{ product.get_absolute_url }}">
+                <img class="img-responsive" src='{% static "img/Placeholder.svg" %}'>
+                </a>
+            {% endif %}
+            
+            
+        
+            <div class="caption">
+                <a href="{{ product.get_absolute_url }}" style="text-decoration: none; color: black;">
+                <h4>{{ product.title }}</h4>
+                <p>Rp {{ product.price|intcomma }}</p>
+                <p>{{ product.description|truncatewords:15}}</p>
+                </a>
+                <br>
+
+            </div>
+            <br>
+            
+        </div>
+        {% endfor %}
+    </div>
+{% endblock content %}
+
+
+{% block jquery %}
+<!-- <script>
+    $(document).ready(function(){
+        alert("Welcome!");
+    })
+</script> -->
+{% endblock jquery %}
+    

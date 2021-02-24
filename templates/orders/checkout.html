@@ -1,0 +1,59 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="row">
+    {% if current_addresses %}
+    <div class="col-sm-8">
+        <h3>Shipping Adresses</h3>
+
+        {% for address in current_addresses %}
+
+        {% if request.user.userdefaultaddress.shipping.id == address.id %} 
+        <input type="radio" name="shipping_address" value="{{ address.id }}" checked="checked">{{ address.get_address }} <br>
+        
+        {% else %}
+        <input type="radio" name="shipping_address" value="{{ address.id }}">{{ address.get_address }} <br>
+        
+        {% endif %}
+        
+        {% endfor %}
+    {% endif %}
+    
+    <br>
+    
+    {% if billing_addresses %}
+        <h3>Billing Addresses</h3>
+        {% for address in billing_addresses %}
+
+        {% if request.user.userdefaultaddress.billing.id == address.id %} 
+        <input type="radio" name="billing_address" value="{{ address.id }}" checked="checked">{{ address.get_address }} <br>
+        
+        {% else %}
+        <input type="radio" name="billing_address" value="{{ address.id }}">{{ address.get_address }} <br>
+        
+        {% endif %}
+        
+        {% endfor %}
+    {% endif %}
+
+    <br>
+    <!-- <a href="{% url 'proceed_checkout' %}">Proceed checkout</a> -->
+    <form method="POST" action="">{% csrf_token %}
+        
+    </form>
+    </div>
+
+    {% if address_form %}
+        <div class="col-sm-4">
+        <h3>Add new Shipping Address</h3>
+        <form method="POST" action="{% url 'ajax_add_user_address' %}?next=checkout">{% csrf_token %}
+            {{ address_form.as_p }}
+            <input type="submit" class="btn btn-dark" value="Add Shipping Address">
+        </form>
+        </div>
+    {% endif %}
+</div>
+    
+    
+{% endblock content %}
+    

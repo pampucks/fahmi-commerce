@@ -1,0 +1,54 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load humanize %}
+
+
+{% block head_title %}
+Products || 
+{% endblock head_title %}
+
+{% block content %}
+    <div class="row">
+        
+        {% for product in products %}
+        <div class="col-sm-2">
+            
+            
+            {% if product.productimage_set.all %}
+                {% for item in product.productimage_set.all %}
+                    {% if item.featured %}
+                    <a href="{{ product.get_absolute_url }}">
+                    <div class="img-thumbnail" style="    
+                    width: 170px; 
+                    height: 170px; 
+                    background-image: url('{{ MEDIA_URL }}{{ item.image }}');
+                    background-repeat: no-repeat;
+                    background-size: cover;
+                    background-position: center;
+                    margin: 0 auto;
+                    "></div>
+                    </a>
+                    {% endif %}
+                {% endfor %}
+            
+            {% else %}
+                <a href="{{ product.get_absolute_url }}">
+                <img class="img-responsive" src='{% static "img/Placeholder.svg" %}' style="width: 170px; height: 170px;">
+                </a>
+            {% endif %}
+                
+        
+            <div class="caption">
+                <a href="{{ product.get_absolute_url }}" style="text-decoration: none; color: black;">
+                <h4>{{ product.title }}</h4>
+                <p>Rp {{ product.price|intcomma }}</p>
+                <p>{{ product.description|truncatewords:15}}</p>
+                </a>
+            </div>
+            
+            
+        </div>
+        {% endfor %}
+    </div>
+{% endblock content %}
+    

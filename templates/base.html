@@ -1,0 +1,159 @@
+{% load static %}
+<!doctype html>
+<html lang="en">
+    <head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{% block head_title %}{% endblock head_title %} Aneka Flora</title>
+    <link rel="canonical" href="https://getbootstrap.com/docs/5.0/examples/navbar-static/">
+    <link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}">
+    <link rel="stylesheet" href="{% static 'css/navbar-top.css' %}">
+
+    {% block styles %}
+    <style>
+        /* .container{
+            color:red;
+        } */
+        .bd-placeholder-img {
+            font-size: 1.125rem;
+            text-anchor: middle;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            user-select: none;
+        }
+        @media (min-width: 768px) {
+        .bd-placeholder-img-lg {
+            font-size: 3.5rem;
+        }}
+        .alert-top-message {
+            margin-bottom: 0px;
+            border-radius: 0px;
+            padding-left: 0px;
+            text-align: center;
+            background-color: lightcyan;
+        }
+        .alert-top-message h3 {
+            margin: auto;
+        }
+        .modal-dialog {
+            margin-top: 15%;
+        }
+    </style>
+    {% endblock styles %}
+    <script type="text/javascript" src="https://js.stripe.com/v3/"></script>
+    </head>
+
+    <body>
+    {% if marketing_message %}
+        <div class="alert alert-success alert-top-message alert-dismissible fade show" role="alert">
+            <div class="container">
+            <button id="marketing-message-btn" type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            <h3>{{ marketing_message.message|safe }}</h3>
+            </div>
+        </div>    
+    {% endif %}
+
+    {% include 'navbar.html' %}
+    
+    {% block jumbotron %}
+    <!-- <div class="container">
+        <div class="bg-dark p-5 rounded" style="color: white;">
+            <h1>Hello {{username_is}}</h1>
+            <p class="lead">This example is a quick exercise to illustrate how the top-aligned navbar works. As you scroll, this navbar remains in its original position and moves with the rest of the page.</p>
+            <a class="btn btn-lg btn-primary" href="/docs/5.0/components/navbar/" role="button">View navbar docs &raquo;</a>
+        </div>
+    </div> -->
+    {% endblock jumbotron %}
+    
+    <div class="container">
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert alert-second fade show {% if 'success' in message.tags %}alert-success{% elif 'warning' in message.tags %}alert-warning{% elif 'error' in message.tags %}alert-danger{% endif %} alert-dismissible" role="alert">
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    {% if 'safe' in message.tags %}{{ message|safe }}{% else %}{{ message }}{% endif %}
+                </div>
+            {% endfor %}
+        {% endif %}
+
+    {% block content %}
+    {% endblock content %}
+    </div>
+
+    {% include 'modal.html' %}
+
+    <script src="{% static 'js/bootstrap.bundle.min.js' %}"></script>
+    <script src="{% static 'js/jquery.min.js' %}"></script>
+    
+    <script>
+        $(document).ready(function(){
+            $("#marketing-message-btn").click(function(e){
+                $.ajax({
+                    type: "POST",
+                    url: "{% url 'dismiss_marketing_message' %}",
+                    data: {
+                        "dismiss-marketing": true,
+                        "csrfmiddlewaretoken": "{{ csrf_token }}",
+                    },
+                    success: function(data){
+                        console.log("success!")
+                        console.log(data)
+                    },
+                    error: function(){
+                        alert("Error! Something Wrong. Please try again later")
+                    },
+                });
+            });
+            {% if not request.user.is_authenticated and not request.session.email_added_marketing and not "accounts" in request.get_full_path %}       
+            function showModal(){
+                $("#marketingModal").modal("show");
+                // setTimeout(showModal, 5000);
+            }
+            // showModal()
+            setTimeout(showModal, 5000);
+            $("#sendMarketingForm").click(function(e){
+                e.preventDefault()
+                var mForm = $("#sendForm").serialize()
+                $.ajax({
+                    type: "POST",
+                    url: "{% url 'ajax_email_signup' %}",
+                    data: mForm,
+                    success: function(data){
+                        // console.log(data)
+                        $("#modalMessage").html("<p>" + data + "</p>")
+                        $("#marketingModal").modal("hide");
+                    },
+                    error: function(data){
+                        // console.log(data)
+                        // console.log(data.responseJSON)
+                        var obj = data.responseJSON
+                        // console.log(obj)
+                        // console.log(obj.email)
+                        $("#modalMessage").html("<p style='color:red;'>" + obj.email + "</p>")
+                    },
+                });
+            });
+            {% endif %}
+        });
+    </script>
+    
+    <script>
+    {% block jquery %}
+        $(document).ready(function(){});    
+    {% endblock jquery %}
+    </script>
+    
+    </body>
+</html>
+
+
+
+
+<!-- jika ingin menggunakan cdn bootstrap-->
+<!-- Bootstrap core CSS -->
+<!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/css/bootstrap.min.css"> -->
+<!-- Custom styles for this template -->
+<!-- <link rel="stylesheet" href="https://getbootstrap.com/docs/5.0/examples/navbar-static/navbar-top.css"> -->
+<!-- Bootstrap core Javascript -->
+<!-- <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/js/bootstrap.bundle.min.js"></script> -->
+<!-- <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script> -->
